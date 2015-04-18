@@ -62,7 +62,7 @@ module FPM::Util
     program = args[0]
 
     if !program_exists?(program)
-      raise ExecutableNotFound.new(program)
+      #raise ExecutableNotFound.new(program)
     end
 
     logger.debug("Running command", :args => args)

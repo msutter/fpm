@@ -7,13 +7,20 @@ module FPM::Util
   extend FFI::Library
   ffi_lib FFI::Library::LIBC
 
+  # windows OS ?
+  def self.windows?
+    (/cygwin|mswin|mingw|bccwin|wince|emx/ =~ RUBY_PLATFORM) != nil
+  end
+
   # mknod is __xmknod in glibc a wrapper around mknod to handle
   # various stat struct formats. See bits/stat.h in glibc source
-  begin
-    attach_function :mknod, :mknod, [:string, :uint, :ulong], :int
-  rescue FFI::NotFoundError
-    # glibc/io/xmknod.c int __xmknod (int vers, const char *path, mode_t mode, dev_t *dev)
-    attach_function :xmknod, :__xmknod, [:int, :string, :uint, :pointer], :int
+  unless windows?
+    begin
+      attach_function :mknod, :mknod, [:string, :uint, :ulong], :int
+    rescue FFI::NotFoundError
+      # glibc/io/xmknod.c int __xmknod (int vers, const char *path, mode_t mode, dev_t *dev)
+      attach_function :xmknod, :__xmknod, [:int, :string, :uint, :pointer], :int
+    end
   end
 
   # Raised if safesystem cannot find the program to run.
